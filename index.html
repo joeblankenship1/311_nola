@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
 
-    <title>New Orleans 311 Calls - 2012 to Present</title>
+    <title>New Orleans 311 Calls - 2017</title>
     <!-- add leaflet css -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
     <!-- add custom css -->
@@ -56,33 +56,31 @@
         map.getPane('labels').style.zIndex = 650; // set Z axis for labels above primary canvas
         map.getPane('labels').style.pointerEvents = 'none'; // set interactivity to none so mouse interacts with below layers
         // add cartoDB baselayer with labels only
-        L.tileLayer('https://cartodb-basemaps-d.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', { // dark_only_labels
+        L.tileLayer('https://cartodb-basemaps-d.global.ssl.fastly.net/dark_only_labels/{z}/{x}/{y}.png', { // dark_all for roads
             attribution: '©OpenStreetMap, ©CartoDB',
             pane: 'labels'
         }).addTo(map);
         // use jQuery to pull in the data layers
-        /*$.when(
-            //replace these values with new data
-            //remove this comment when complete
-            $.getJSON('data/city-limits.json'),
-            $.getJSON('data/neighborhoods-filtered1.json'),
-            $.getJSON('data/transit-routes-simp.json'),
-            $.getJSON('data/atlanta-urban.json')
-        ).done(function(cityLimits, neighborhoods, transitRoutes, urbanAreas) {
-            drawMap(cityLimits, neighborhoods, transitRoutes, urbanAreas); // call drawMap to render layers in 'map'
+        $.when(
+            $.getJSON('data/parish-boundary.json'),
+            $.getJSON('data/neighborhoods.json'),
+            $.getJSON('data/311_calls_2017.json'),
+            $.getJSON('data/nola-urban.json')
+        ).done(function(parishBoundaries, neighborhoods, calls2017, urbanAreas) {
+            drawMap(parishBoundaries, neighborhoods, calls2017, urbanAreas); // call drawMap to render layers in 'map'
         });
 
-        function drawMap(cityLimitsData, neighborhoodsData, transitRoutesData, urbanAreasData) {
+        function drawMap(parishBoundariesData, neighborhoodsData, calls2017Data, urbanAreasData) {
             L.geoJson(urbanAreasData, { // urban areas with styling options
                 style: urbanOptions
             }).addTo(map);
-            L.geoJson(cityLimitsData, { // city limits for ATL with styling options
-                style: cityLimitsOptions
+            L.geoJson(parishBoundariesData, { // city limits for ATL with styling options
+                style: parishBoundariesOptions
             }).addTo(map);
             L.geoJson(neighborhoodsData, { // neighborhoods with styling
                 style: neighborhoodOptions,
                 onEachFeature: function(feature, layer) { // for each feature in neighborhoods
-                    var tooltip = feature.properties.NAME; // get NAME
+                    var tooltip = feature.properties.GNOCDC_LAB; // get NAME
 
                     layer.bindTooltip(tooltip, { // create a 'tooltip' to render NAME info
                         sticky: true,
@@ -98,15 +96,7 @@
                     });
                 }
             }).addTo(map);
-            L.geoJson(transitRoutesData, { // transit routes with styling
-                style: function(feature) {
-                    var type = feature.properties.type; // identify transit route types
-
-                    return type === 'SUBWAY' ? subwayOptions : // style subways
-                        type === 'Bus' ? busOptions : // style bus routes
-                        type === 'TRAM' ? tramOptions : otherRoutes; // style tram routes
-                }
-            }).addTo(map);
+            L.geoJson(calls2017Data).addTo(map);
 
         }
         // styling options variables for the above 4 layers
@@ -115,7 +105,7 @@
             weight: 0
         }
 
-        var cityLimitsOptions = {
+        var parishBoundariesOptions = {
             fillOpacity: 0,
             color: '#040d18',
             opacity: 1,
@@ -130,26 +120,6 @@
             opacity: 1
         };
 
-        var subwayOptions = {
-            color: '#ff6e00',
-            weight: 2,
-            opacity: 1
-        }
-
-        var busOptions = {
-            color: '#f0f062',
-            weight: .1,
-            opacity: 1
-        }
-
-        var tramOptions = {
-            color: '#ff6e00',
-            weight: 2
-        }
-
-        var otherRoutes = {
-            color: '#ff6e00'
-        }*/
     </script>
 </body>
 
