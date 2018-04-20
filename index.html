@@ -1,0 +1,126 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>New Orleans 311 Calls - 2017</title>
+    <!-- add leaflet css -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+    <!-- add custom css -->
+    <style>
+        body,
+        #map {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            bottom: 0;
+            margin: 0;
+            padding: 0;
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .tooltip {
+            color: white;
+            background: #295b97;
+            border: 0;
+            font-size: 1.3em;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- main map div -->
+    <div id="map"></div>
+    <!-- add leaflet and jQuery libraries -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script>
+        // options for map
+        var options = {
+            center: [29.964, -90.067],
+            zoom: 10,
+            minZoom: 10,
+            maxZoom: 16,
+            maxBounds: [
+                [30.216, -89.612],
+                [29.816, -90.216]
+            ]
+        };
+        // add map
+        var map = L.map('map', options);
+        // create overlay pane with labels only
+        map.createPane('labels');
+        map.getPane('labels').style.zIndex = 650; // set Z axis for labels above primary canvas
+        map.getPane('labels').style.pointerEvents = 'none'; // set interactivity to none so mouse interacts with below layers
+        // add cartoDB baselayer with labels only
+        L.tileLayer('https://cartodb-basemaps-d.global.ssl.fastly.net/dark_only_labels/{z}/{x}/{y}.png', { // dark_all for roads
+            attribution: '©OpenStreetMap, ©CartoDB',
+            pane: 'labels'
+        }).addTo(map);
+        // use jQuery to pull in the data layers
+        $.when(
+            $.getJSON('data/parish-boundary.json'),
+            $.getJSON('data/neighborhoods.json'),
+            $.getJSON('data/311_calls_2017.json'),
+            $.getJSON('data/nola-urban.json')
+        ).done(function(parishBoundaries, neighborhoods, calls2017, urbanAreas) {
+            drawMap(parishBoundaries, neighborhoods, calls2017, urbanAreas); // call drawMap to render layers in 'map'
+        });
+
+        function drawMap(parishBoundariesData, neighborhoodsData, calls2017Data, urbanAreasData) {
+            L.geoJson(urbanAreasData, { // urban areas with styling options
+                style: urbanOptions
+            }).addTo(map);
+            L.geoJson(parishBoundariesData, { // city limits for ATL with styling options
+                style: parishBoundariesOptions
+            }).addTo(map);
+            L.geoJson(neighborhoodsData, { // neighborhoods with styling
+                style: neighborhoodOptions,
+                onEachFeature: function(feature, layer) { // for each feature in neighborhoods
+                    var tooltip = feature.properties.GNOCDC_LAB; // get NAME
+
+                    layer.bindTooltip(tooltip, { // create a 'tooltip' to render NAME info
+                        sticky: true,
+                        className: 'tooltip'
+                    });
+                    layer.on('mouseover', function(e) { // when mouse hovers over, decrease opacity
+                        this.setStyle({
+                            fillOpacity: .1
+                        });
+                    });
+                    layer.on('mouseout', function(e) { // when mouse moves away, reset opacity
+                        this.setStyle(neighborhoodOptions);
+                    });
+                }
+            }).addTo(map);
+            L.geoJson(calls2017Data).addTo(map);
+
+        }
+        // styling options variables for the above 4 layers
+        var urbanOptions = {
+            color: '#295b97',
+            weight: 0
+        }
+
+        var parishBoundariesOptions = {
+            fillOpacity: 0,
+            color: '#040d18',
+            opacity: 1,
+            weight: 3
+        };
+
+        var neighborhoodOptions = {
+            fillOpacity: .3,
+            fillColor: '#e0ecf9',
+            color: '#151f2b',
+            weight: 1.7,
+            opacity: 1
+        };
+
+    </script>
+</body>
+
+</html>
