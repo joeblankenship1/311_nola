@@ -40,13 +40,13 @@
     <script>
         // options for map
         var options = {
-            center: [29.964, -90.067],
-            zoom: 10,
-            minZoom: 10,
+            center: [29.946, -90.128],
+            zoom: 11,
+            minZoom: 11,
             maxZoom: 16,
             maxBounds: [
-                [30.216, -89.612],
-                [29.816, -90.216]
+                [30.375, -89.426],
+                [29.710, -90.716]
             ]
         };
         // add map
@@ -96,7 +96,11 @@
                     });
                 }
             }).addTo(map);
-            L.geoJson(calls2017Data).addTo(map);
+            L.geoJson(calls2017Data, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, callOptions);
+                }
+            }).addTo(map);
 
         }
         // styling options variables for the above 4 layers
@@ -118,6 +122,15 @@
             color: '#151f2b',
             weight: 1.7,
             opacity: 1
+        };
+
+        var callOptions = {
+            radius: 2,
+            fillColor: "#ff7800",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
         };
 
     </script>
