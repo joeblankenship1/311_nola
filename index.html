@@ -64,7 +64,7 @@
         $.when(
             $.getJSON('data/parish-boundary.json'),
             $.getJSON('data/neighborhoods.json'),
-            $.getJSON('data/311_calls_2017.json'),
+            $.getJSON('data/311_calls_2017_selected.json'),
             $.getJSON('data/nola-urban.json')
         ).done(function(parishBoundaries, neighborhoods, calls2017, urbanAreas) {
             drawMap(parishBoundaries, neighborhoods, calls2017, urbanAreas); // call drawMap to render layers in 'map'
@@ -97,8 +97,16 @@
                 }
             }).addTo(map);
             L.geoJson(calls2017Data, {
+                style: function(feature) {
+                  // shortcut to variable
+                  var type = feature.properties.issue_type;
+
+                  // assign options
+                  return type === 'Street Light' ? streetLightOptions :
+                         type === 'Sidewalk Repair' ? sidewalkOptions : rodentOptions;
+                },
                 pointToLayer: function (feature, latlng) {
-                    return L.circleMarker(latlng, callOptions);
+                      return L.circleMarker(latlng);
                 }
             }).addTo(map);
 
@@ -124,9 +132,27 @@
             opacity: 1
         };
 
-        var callOptions = {
+        var streetLightOptions = {
             radius: 2,
-            fillColor: "#ff7800",
+            fillColor: "#30DB7A",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        };
+
+        var sidewalkOptions = {
+            radius: 2,
+            fillColor: "#7A30DB",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        };
+
+        var rodentOptions = {
+            radius: 2,
+            fillColor: "#DB7A30",
             color: "#000",
             weight: 1,
             opacity: 1,
