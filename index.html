@@ -21,17 +21,56 @@
             background: rgba(0, 0, 0, 0.75);
         }
 
+        h1 {
+            position: absolute;
+            z-index: 650;
+            top: 10px;
+            left: 60px;
+            padding: 8px 15px;
+            margin: 0;
+            color: whitesmoke;
+            font-size: 1.5em;
+            background: rgba(25, 25, 25, 0.8);
+            border-radius: 5px;
+        }
+
         .tooltip {
             color: white;
             background: #295b97;
             border: 0;
             font-size: 1.3em;
         }
+
+        .legend {
+            padding: 6px 8px;
+            font-size: 1em;
+            background: rgba(75, 75, 75, 0.8);
+            color: whitesmoke;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            line-height: 24px;
+        }
+
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.9;
+        }
+
+        .legend .circle {
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            margin-top: 8px;
+        }
     </style>
 
 </head>
 
 <body>
+    <h1>New Orleans 311 Calls &ndash; 2017</h1>
     <!-- main map div -->
     <div id="map"></div>
     <!-- add leaflet and jQuery libraries -->
@@ -68,6 +107,7 @@
             $.getJSON('data/nola-urban.json')
         ).done(function(parishBoundaries, neighborhoods, calls2017, urbanAreas) {
             drawMap(parishBoundaries, neighborhoods, calls2017, urbanAreas); // call drawMap to render layers in 'map'
+            drawLegend(); // draw legend
         });
 
         function drawMap(parishBoundariesData, neighborhoodsData, calls2017Data, urbanAreasData) {
@@ -98,19 +138,55 @@
             }).addTo(map);
             L.geoJson(calls2017Data, {
                 style: function(feature) {
-                  // shortcut to variable
-                  var type = feature.properties.issue_type;
+                    // shortcut to variable
+                    var type = feature.properties.issue_type;
 
-                  // assign options
-                  return type === 'Street Light' ? streetLightOptions :
-                         type === 'Sidewalk Repair' ? sidewalkOptions : rodentOptions;
+                    // assign options
+                    return type === 'Street Light' ? streetLightOptions :
+                        type === 'Sidewalk Repair' ? sidewalkOptions : rodentOptions;
                 },
-                pointToLayer: function (feature, latlng) {
-                      return L.circleMarker(latlng);
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng);
                 }
             }).addTo(map);
 
         }
+
+        function getColor(d) {
+            switch (d) {
+                case 'Street Light':
+                    return '#30DB7A';
+                case 'Sidewalk Repair':
+                    return '#7A30DB';
+                case 'Rodent Complaint':
+                    return '#DB7A30';
+                default:
+                    return '#fff';
+            }
+        }
+
+        function drawLegend() {
+            var legend = L.control({
+                position: 'bottomright'
+            });
+
+            legend.onAdd = function(map) {
+                var div = L.DomUtil.create('div', 'info legend');
+
+                categories = ['Street Light', 'Sidewalk Repair', 'Rodent Complaint'];
+
+                for (var i = 0; i < categories.length; i++) {
+                    div.innerHTML +=
+                        '<i class="circle" style="background:' + getColor(categories[i]) + '"></i> ' +
+                        (categories[i] ? categories[i] + '<br>' : '+');
+                }
+
+                return div;
+            };
+
+            legend.addTo(map);
+        }
+
         // styling options variables for the above 4 layers
         var urbanOptions = {
             color: '#295b97',
@@ -133,7 +209,7 @@
         };
 
         var streetLightOptions = {
-            radius: 2,
+            radius: 4,
             fillColor: "#30DB7A",
             color: "#000",
             weight: 1,
@@ -142,7 +218,7 @@
         };
 
         var sidewalkOptions = {
-            radius: 2,
+            radius: 4,
             fillColor: "#7A30DB",
             color: "#000",
             weight: 1,
@@ -151,14 +227,13 @@
         };
 
         var rodentOptions = {
-            radius: 2,
+            radius: 4,
             fillColor: "#DB7A30",
             color: "#000",
             weight: 1,
             opacity: 1,
             fillOpacity: 0.8
         };
-
     </script>
 </body>
 
