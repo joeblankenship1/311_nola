@@ -25,6 +25,19 @@ You can now save this as `inputFile.vrt` and then run your `ogr2ogr` command:
 ogr2ogr -f GeoJSON outputFile.json inputFile.vrt
 ```
 
+### Extract features with ogr2ogr
+
+Both the Urban Areas and 311 Calls data sets needed to be paired down to make visualization simple and improve load time. The Urban Areas data set includes the footprints of every urban area in the USA. Since we are only interested in New Orleans, we selected all relevant features and created a new GeoJSON file using the `ogr2ogr` command:
+
+```
+ogr2ogr -f "GeoJSON" -where "NAME10='New Orleans, LA'" nola-urban.json urban-areas.json
+```
+
+The 311 Calls data set was huge and significantly affected load time. To reduce the size of the file, we used a `SQL` statement with `ogr2ogr` to select the three features we wanted to map:
+
+```
+ogr2ogr -f "GeoJSON" -where ""
+
 ### Data
 
 * [311 Calls (2012-Present)](https://data.nola.gov/City-Administration/311-Calls-2012-Present-/3iz8-nghx)
