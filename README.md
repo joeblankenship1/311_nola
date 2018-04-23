@@ -29,5 +29,7 @@ ogr2ogr -f GeoJSON outputFile.json inputFile.vrt
 
 * [311 Calls (2012-Present)](https://data.nola.gov/City-Administration/311-Calls-2012-Present-/3iz8-nghx)
 * [Neighborhood Statistical Areas](https://data.nola.gov/Geographic-Base-Layers/Neighborhood-Statistical-Areas/c2j2-5qdf)
+* [Orleans Parish Boundary](https://data.nola.gov/dataset/Orleans-Parish-Boundary/5jjm-ygfn)
+* [New Orleans Urban Area](https://www.census.gov/geo/maps-data/data/cbf/cbf_ua.html)
 
 The content on the pages is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
