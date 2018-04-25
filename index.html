@@ -153,16 +153,14 @@
         }
 
         function getColor(d) {
-            switch (d) {
-                case 'Street Light':
-                    return '#30DB7A';
-                case 'Sidewalk Repair':
-                    return '#7A30DB';
-                case 'Rodent Complaint':
-                    return '#DB7A30';
-                default:
-                    return '#fff';
+            // object literal for determining color
+            var colorMap = {
+                'Street Light':'#30DB7A',
+                'Sidewalk Repair': '#7A30DB',
+                'Rodent Complaint':'#DB7A30'
             }
+
+            return colorMap[d]
         }
 
         function drawLegend() {
